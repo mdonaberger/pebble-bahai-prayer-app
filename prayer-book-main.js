@@ -5,16 +5,31 @@
 
 import {} from "piu/MC";
 import Button from "pebble/button";
-import { OBLIGATORY_PRAYERS, GENERAL_PRAYERS, OCCASIONAL_PRAYERS } from "./prayers";
 
 // ═══════════════════════════════════════════════════════════════
-// SECTION 1: DATA
+// SECTION 1: DATA (inlined — no module import for memory)
 // ═══════════════════════════════════════════════════════════════
 
 const PRAYER_DATA = [
-    { title: "Obligatory", icon: "O", items: OBLIGATORY_PRAYERS },
-    { title: "General", icon: "G", items: GENERAL_PRAYERS },
-    { title: "Occasional", icon: "C", items: OCCASIONAL_PRAYERS }
+    { title: "Obligatory", icon: "O", items: [
+        { title: "Short Obligatory", by: "The Báb",
+          text: "I bear witness, O my God, that Thou hast created me to know Thee and to worship Thee. I testify, at this moment, to my powerlessness and to Thy might, to my poverty and to Thy wealth.\n\nThere is none other God but Thee, the Help in Peril, the Self-Subsisting." }
+    ]},
+    { title: "General", icon: "G", items: [
+        { title: "For Aid", by: "Bahá'u'lláh",
+          text: "O Thou Whose face is the object of my adoration, Whose beauty is my sanctuary, Whose habitation is my goal, Whose praise is my hope, Whose providence is my companion.\n\nSupply me with the good of this world and of the next. Thou, truly, art the King of all men. There is no God but Thee, the Ever-Forgiving, the Most Generous." },
+        { title: "For Assistance", by: "Bahá'u'lláh",
+          text: "Thou seest me, O my God, holding to Thy Name, the Most Holy, the Most Luminous, the Most Mighty.\n\nSend down upon me that which will enable me to dispense with all except Thee." },
+        { title: "For Unity", by: "'Abdu'l-Bahá",
+          text: "O my God! Unite the hearts of Thy servants, and reveal to them Thy great purpose.\n\nGrant them strength to serve Thee. Thou art the Helper, the Exalted, the Powerful." },
+        { title: "For Tests", by: "'Abdu'l-Bahá",
+          text: "O Thou Whose tests are a healing medicine to such as are nigh unto Thee, Whose sword is the ardent desire of them that yearn after Thee!\n\nI beseech Thee, by Thy divine sweetness and by the splendors of Thy glory, to immerse us in the ocean of Thy mercy." }
+    ]},
+    { title: "Occasional", icon: "C", items: [
+        { title: "Naw-Rúz", by: "Bahá'u'lláh",
+          text: "This is, O my God, the first of the days on which Thou hast bidden Thy loved ones to observe the Fast.\n\nI beg of Thee, by Thy self and by the glory of Thy Cause, to accept what Thou hast prescribed for them in Thy Book.\n\nGrant that they may be enabled to attain unto that which shall profit them."
+        }
+    ]}
 ];
 
 // ═══════════════════════════════════════════════════════════════
