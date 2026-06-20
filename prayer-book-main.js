@@ -5,8 +5,13 @@
 
 import {} from "piu/MC";
 import Button from "pebble/button";
-import Vibes from "pebble/vibes";
-import Compass from "embedded:sensor/Compass";
+
+// Vibes and Compass may not be available in CloudPebble emulator.
+// We import them lazily via a safe wrapper.
+let Vibes = null;
+let Compass = null;
+try { Vibes = require("pebble/vibes"); } catch(e) {}
+try { Compass = require("embedded:sensor/Compass"); } catch(e) {}
 
 // ═══════════════════════════════════════════════════════════════
 // SECTION 1: DATA
@@ -414,13 +419,15 @@ class AppBehavior extends Behavior {
         if (type === "up" || type === "select") {
             if (nav.counter < 95) {
                 nav.counter++;
-                Vibes.shortPulse();
+                if (Vibes) Vibes.shortPulse();
                 app.first.delegate("onCountUpdate", nav.counter);
                 if (nav.counter === 95) {
                     app.first.delegate("onCountComplete");
-                    nav.counterVibeInterval = setInterval(() => {
-                        Vibes.pattern([300, 100, 300, 100, 300]);
-                    }, 800);
+                    if (Vibes) {
+                        nav.counterVibeInterval = setInterval(() => {
+                            Vibes.pattern([300, 100, 300, 100, 300]);
+                        }, 800);
+                    }
                 }
             }
         } else if (type === "down") {
@@ -432,7 +439,7 @@ class AppBehavior extends Behavior {
             if (nav.counterVibeInterval) {
                 clearInterval(nav.counterVibeInterval);
                 nav.counterVibeInterval = null;
-                Vibes.cancel();
+                if (Vibes) Vibes.cancel();
             }
             this.showMain(app);
         }
@@ -442,7 +449,7 @@ class AppBehavior extends Behavior {
         if (nav.counterVibeInterval) {
             clearInterval(nav.counterVibeInterval);
             nav.counterVibeInterval = null;
-            Vibes.cancel();
+            if (Vibes) Vibes.cancel();
         }
         nav.counter = 0;
         this.showMain(app);
@@ -520,6 +527,13 @@ class CompassBehavior extends Behavior {
         this.headingLabel = column.first.next.next;
         this.bearingLabel = column.first.next.next.next;
         this.bearing = qiblaBearing(DEFAULT_LAT, DEFAULT_LON);
+
+        if (!Compass) {
+            this.directionLabel.string = "Qiblih: " + Math.round(this.bearing) + " deg";
+            this.headingLabel.string = "Compass needs real";
+            this.bearingLabel.string = "hardware (no sensor)";
+            return;
+        }
 
         this.compass = new Compass({
             onSample: () => {
