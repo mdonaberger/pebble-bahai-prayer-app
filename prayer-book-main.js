@@ -83,7 +83,6 @@ const redStyle = new Style({ font: "bold 18px Gothic", color: "#e94560", horizon
 const itemStyle = new Style({ font: "bold 18px Gothic", color: ["#e8e8e8", "white"], horizontal: "left", left: 10 });
 const subStyle = new Style({ font: "14px Gothic", color: ["#b0b0b0", "white"], horizontal: "left", left: 10 });
 const bodyStyle = new Style({ font: "14px Gothic", color: "#e8e8e8", horizontal: "left", leading: 4, left: 10, right: 10, top: 5, bottom: 5 });
-const bigStyle = new Style({ font: "bold 24px Gothic", color: "#e94560", horizontal: "left", left: 10, right: 5, top: 5 });
 const greyStyle = new Style({ font: "14px Gothic", color: "#555555", horizontal: "center", top: 2, bottom: 2 });
 
 // ═══════════════════════════════════════════════════════════════
@@ -113,7 +112,7 @@ function highlight(app, idx) {
 
 class AppBehavior extends Behavior {
     onButtonPush(app, down, type) {
-        if (down) return;
+        if (!down) return;  // act on PRESS, not release
         if (nav.screen === "main") {
             const n = MENU.length;
             if (type === "up") { nav.mi = (nav.mi-1+n)%n; highlight(app, nav.mi); }
@@ -205,10 +204,7 @@ const ReadCol = Column.template($ => ({
                         Label(null, { top: 2, height: 14, left: 0, right: 0, style: greyStyle, string: "< hold back" }),
                         new Text(null, {
                             left: 0, right: 0, top: 3, style: bodyStyle,
-                            blocks: [{ spans: [
-                                { style: bigStyle, spans: $.text.split(" ")[0] + " " },
-                                { style: bodyStyle, spans: $.text.split(" ").slice(1).join(" ") }
-                            ]}]
+                            string: $.text
                         }),
                         new Text(null, { left: 0, right: 0, top: 5, style: greyStyle, string: "— " + $.by })
                     ]
