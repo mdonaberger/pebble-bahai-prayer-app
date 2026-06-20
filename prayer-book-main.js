@@ -5,38 +5,16 @@
 
 import {} from "piu/MC";
 import Button from "pebble/button";
+import { OBLIGATORY_PRAYERS, GENERAL_PRAYERS, OCCASIONAL_PRAYERS } from "./prayers";
 
 // ═══════════════════════════════════════════════════════════════
 // SECTION 1: DATA
 // ═══════════════════════════════════════════════════════════════
 
 const PRAYER_DATA = [
-    { title: "Prayers", icon: "P", items: [
-        { title: "Morning Prayer", by: "Bahá'u'lláh",
-          text: "I have wakened in Thy shelter, O my God, and within the refuge of Thy care. I have entered Thy dwelling-place, and have found Thy beloved ones.\n\nI beseech Thee, O my Lord, to make me one of them that are steadfast in Thy Cause.\n\nThou art, verily, the Almighty, the All-Knowing." },
-        { title: "Evening Prayer", by: "Bahá'u'lláh",
-          text: "O Thou Who art the Lord of all names! I entreat Thee to ordain for me the good of this world and of the world to come.\n\nReveal unto me that which will enrich me from all besides Thee. Thou art the Lord of all worlds." },
-        { title: "Short Obligatory", by: "The Báb",
-          text: "I bear witness, O my God, that Thou hast created me to know Thee and to worship Thee. I testify to my powerlessness and to Thy might, to my poverty and to Thy wealth.\n\nThere is none other God but Thee, the Help in Peril, the Self-Subsisting." },
-        { title: "For Assistance", by: "Bahá'u'lláh",
-          text: "Thou seest me, O my God, holding to Thy Name, the Most Holy.\n\nSend down upon me that which will enable me to dispense with all except Thee." },
-        { title: "For Unity", by: "'Abdu'l-Bahá",
-          text: "O my God! Unite the hearts of Thy servants, and reveal to them Thy great purpose.\n\nGrant them strength to serve Thee. Thou art the Helper, the Exalted." }
-    ]},
-    { title: "Writings", icon: "W", items: [
-        { title: "Hidden Word Ar 1", by: "Bahá'u'lláh",
-          text: "O SON OF SPIRIT!\n\nMy first counsel is this: Possess a pure, kindly and radiant heart, that thine may be a sovereignty ancient, imperishable and everlasting." },
-        { title: "Hidden Word Ar 2", by: "Bahá'u'lláh",
-          text: "O SON OF SPIRIT!\n\nThe best beloved of all things in My sight is Justice. By its aid thou shalt see with thine own eyes and not through the eyes of others, and shalt know of thine own knowledge.\n\nVerily justice is My gift to thee." },
-        { title: "On Peace", by: "Bahá'u'lláh",
-          text: "O ye children of men! The fundamental purpose of the Faith of God is to safeguard the interests and promote the unity of the human race.\n\nWhatsoever is raised on this foundation can never impair its strength." }
-    ]},
-    { title: "Meditations", icon: "M", items: [
-        { title: "On Detachment", by: "'Abdu'l-Bahá",
-          text: "The source of all good is trust in God, submission unto His command, and contentment with His holy will.\n\nThe essence of wisdom is the fear of God." },
-        { title: "On Joy", by: "'Abdu'l-Bahá",
-          text: "Joy gives us wings! In times of joy our strength is more vital, our intellect keener.\n\nWe seem better able to cope with the world." }
-    ]}
+    { title: "Obligatory", icon: "O", items: OBLIGATORY_PRAYERS },
+    { title: "General", icon: "G", items: GENERAL_PRAYERS },
+    { title: "Occasional", icon: "C", items: OCCASIONAL_PRAYERS }
 ];
 
 // ═══════════════════════════════════════════════════════════════
