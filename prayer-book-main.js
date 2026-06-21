@@ -37,6 +37,7 @@ const PRAYER_DATA = [
 // ═══════════════════════════════════════════════════════════════
 
 const BM = ["","Bahá","Jalál","Jamál","'Aẓamat","Núr","Raḥmat","Kalimát","Kamál","Asmá","'Izzat","Mashíyyat","'Ilm","Qudrat","Qawl","Masá'il","Sharaf","Sulṭán","Mulk","'Alá"];
+const BE = ["","Splendour","Glory","Beauty","Grandeur","Light","Mercy","Words","Perfection","Names","Might","Will","Knowledge","Power","Speech","Questions","Honour","Sovereignty","Dominion","Loftiness"];
 const BW = ["Jamál (Sun)","Kamál (Mon)","Fiḍál (Tue)","'Idál (Wed)","Istijlál (Thu)","Istiqlál (Fri)","Jalál (Sat)"];
 
 function getBadi() {
@@ -58,8 +59,7 @@ function getBadi() {
     else { m = 19; day = ds-342-ac+1; }
     return {
         day: day, month: m, year: by, ia: ia,
-        wd: BW[d.getDay()],
-        str: ia ? ("Ayyám-i-Há " + day) : (BM[day] + " " + BM[m])
+        str: ia ? ("Ayyám-i-Há " + day) : (day + " " + BM[m] + " (" + BE[m] + ")")
     };
 }
 
@@ -191,16 +191,9 @@ const ReadCol = Column.template($ => ({
         new Scroller(null, {
             left: 0, right: 0, top: 0, bottom: 0, active: true, backgroundTouch: true,
             contents: [
-                new Column(null, {
-                    top: 0, left: 0, right: 0,
-                    contents: [
-                        Label(null, { top: 2, height: 14, left: 0, right: 0, style: greyStyle, string: "< hold back" }),
-                        new Text(null, {
-                            left: 0, right: 0, top: 3, style: bodyStyle,
-                            string: $.text
-                        }),
-                        new Text(null, { left: 0, right: 0, top: 5, style: greyStyle, string: "— " + $.by })
-                    ]
+                new Text(null, {
+                    left: 5, right: 5, top: 5, style: bodyStyle,
+                    string: $.text + "\n\n— " + $.by
                 })
             ]
         })
@@ -226,7 +219,6 @@ const BadiCol = Column.template($ => {
             Label(null, { top: 0, height: 30, left: 0, right: 0, skin: hdrSkin, style: hdrStyle, string: "Badí Calendar" }),
             Label(null, { top: 15, height: 30, left: 10, right: 10, style: redStyle, string: b.str }),
             Label(null, { top: 5, height: 24, left: 10, right: 10, style: greyStyle, string: b.year + " B.E." }),
-            Label(null, { top: 5, height: 24, left: 10, right: 10, style: greyStyle, string: b.wd }),
             Label(null, { top: 10, height: 20, left: 0, right: 0, style: greyStyle, string: "Back: menu" })
         ]
     };
