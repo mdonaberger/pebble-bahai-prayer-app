@@ -8,7 +8,7 @@
 #include <pebble.h>
 
 /* ── Colors ── */
-#define BG_COLOR     GColorBlack
+#define BG_COLOR     GColorFromHEX(0x140c3b)
 #define FG_COLOR     GColorWhite
 #define HIGHLIGHT_BG GColorFromHEX(0xe6a550)
 #define HEADER_BG    GColorBlack
@@ -34,8 +34,7 @@ typedef struct {
 static Prayer s_obligatory[] = {
     {"Short Obligatory Prayer",
      "Bahá'u'lláh",
-     "I bear witness, O my God, that Thou hast created me to know Thee\n"
-        "and to worship Thee.\n"
+     "I bear witness, O my God, that Thou hast created me to know Thee and to worship Thee.\n"
         "I testify, at this moment, to my powerlessness and to Thy might, to my poverty and to Thy wealth.\n"
         "\n"
         "There is none other God but Thee, the Help in Peril, the Self-Subsisting.",
