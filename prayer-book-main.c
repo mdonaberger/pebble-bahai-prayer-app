@@ -1,6 +1,8 @@
 /* ═══════════════════════════════════════════════════════════════
  * BAHÁ'Í PRAYER BOOK — Pebble C SDK v2
- * Last updated June 20, 2026
+ * main.c — main menu + submenu windows + scrollable reader
+ *
+ * CloudPebble: project type C, target platform emery
  * ═══════════════════════════════════════════════════════════════ */
 
 #include <pebble.h>
@@ -8,8 +10,12 @@
 /* ── Colors ── */
 #define BG_COLOR     GColorBlack
 #define FG_COLOR     GColorWhite
-#define HIGHLIGHT_BG GColorFromHEX(0x0f3460)
+#define HIGHLIGHT_BG GColorFromHEX(0xe6a550)
 #define HEADER_BG    GColorBlack
+
+/* ═══════════════════════════════════════════════════════════════
+ * PRAYER DATA — all 41 prayers from bahaiprayers.org
+ * ═══════════════════════════════════════════════════════════════ */
 
 typedef struct {
     const char *title;
