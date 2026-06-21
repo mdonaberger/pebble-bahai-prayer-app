@@ -1,22 +1,11 @@
 // ═══════════════════════════════════════════════════════════════
-// BAHÁ'Í PRAYER BOOK — Pebble Alloy App v4 (streaming)
-// main.js — paste into CloudPebble src/embeddedjs/main.js
-// ═══════════════════════════════════════════════════════════════
-//
-// PRAYER TEXT IS STREAMED FROM PKJS ON DEMAND
-// Only titles live in watch memory — text fetched when selected
-//
-// Requires in manifest.json:
-//   "modules": { "*": ["./main", "./prayer-index"] }
-//
-// Requires in package.json messageKeys:
-//   ["PRAYER_ID", "PRAYER_TITLE", "PRAYER_AUTHOR", "PRAYER_TEXT", "PRAYER_MORE", "PKJS_READY"]
+// BAHÁ'Í PRAYER BOOK — Pebble Alloy App v5
+// All 41 prayers via flat-string data module
 // ═══════════════════════════════════════════════════════════════
 
 import {} from "piu/MC";
 import Button from "pebble/button";
-import Message from "pebble/message";
-import { PRAYER_INDEX } from "./prayer-index";
+import { CATS, getPrayer } from "./prayer-data";
 
 // ═══════════════════════════════════════════════════════════════
 // SECTION 1: BADÍ CALENDAR
@@ -25,9 +14,7 @@ import { PRAYER_INDEX } from "./prayer-index";
 const BM = ["","Bahá","Jalál","Jamál","'Aẓamat","Núr","Raḥmat","Kalimát","Kamál","Asmá","'Izzat","Mashíyyat","'Ilm","Qudrat","Qawl","Masá'il","Sharaf","Sulṭán","Mulk","'Alá"];
 const BE = ["","Splendour","Glory","Beauty","Grandeur","Light","Mercy","Words","Perfection","Names","Might","Will","Knowledge","Power","Speech","Questions","Honour","Sovereignty","Dominion","Loftiness"];
 
-function isLeapYear(y) {
-    return (y%4===0 && y%100!==0) || (y%400===0);
-}
+function isLeapYear(y) { return (y%4===0 && y%100!==0) || (y%400===0); }
 
 function getBadi() {
     const d = new Date();
@@ -46,10 +33,7 @@ function getBadi() {
     if (ds < 342) { m = Math.floor(ds/19)+1; day = (ds%19)+1; }
     else if (ds < 342+ac) { ia = true; day = ds-342+1; }
     else { m = 19; day = ds-342-ac+1; }
-    return {
-        str: ia ? ("Ayyám-i-Há " + day) : (day + " " + BM[m] + " (" + BE[m] + ")"),
-        year: by
-    };
+    return { str: ia ? ("Ayyám-i-Há " + day) : (day + " " + BM[m] + " (" + BE[m] + ")"), year: by };
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -68,65 +52,10 @@ const bodyStyle = new Style({ font: "14px Gothic", color: "#e8e8e8", horizontal:
 const greyStyle = new Style({ font: "14px Gothic", color: "#555555", horizontal: "center", top: 2, bottom: 2 });
 
 // ═══════════════════════════════════════════════════════════════
-// SECTION 3: APP MESSAGE (streaming from PKJS)
+// SECTION 3: NAV STATE
 // ═══════════════════════════════════════════════════════════════
 
-let pkjsReady = false;
-let pendingText = "";
-let pendingTitle = "";
-let pendingAuthor = "";
-let activePrayerText = "";
-
-const msg = new Message({
-    keys: ["PRAYER_ID", "PRAYER_TITLE", "PRAYER_AUTHOR", "PRAYER_TEXT", "PRAYER_MORE", "PKJS_READY"],
-    onReadable() {
-        const m = this.read();
-        let title = "", author = "", text = "", more = 0, ready = 0;
-        
-        m.forEach((value, key) => {
-            if (key === "PKJS_READY") ready = value;
-            else if (key === "PRAYER_TITLE") title = value;
-            else if (key === "PRAYER_AUTHOR") author = value;
-            else if (key === "PRAYER_TEXT") text = value;
-            else if (key === "PRAYER_MORE") more = value;
-        });
-        
-        if (ready) {
-            pkjsReady = true;
-            return;
-        }
-        
-        // Prayer text streaming in
-        if (title) { pendingTitle = title; pendingAuthor = author; pendingText = ""; }
-        if (text) { pendingText += text; }
-        
-        if (more === 0 && pendingText) {
-            // Last chunk — display it
-            activePrayerText = pendingText;
-            const app = global.application;
-            if (app && app.first) {
-                app.first.delegate("onPrayerLoaded", pendingTitle, pendingAuthor, activePrayerText);
-            }
-            pendingText = "";
-        }
-    }
-});
-
-function requestPrayer(id) {
-    pendingText = "";
-    pendingTitle = "";
-    if (msg) {
-        const m = new Map();
-        m.set("PRAYER_ID", id);
-        msg.write(m);
-    }
-}
-
-// ═══════════════════════════════════════════════════════════════
-// SECTION 4: NAV STATE
-// ═══════════════════════════════════════════════════════════════
-
-let nav = { screen: "main", mi: 0, si: 0, ci: 0, so: 0, count: 0, prayerId: 0 };
+let nav = { screen: "main", mi: 0, si: 0, ci: 0, so: 0, count: 0 };
 
 const MENU = [
     { t: "Obligatory", i: "O", type: "data", ci: 0 },
@@ -137,7 +66,7 @@ const MENU = [
 ];
 
 // ═══════════════════════════════════════════════════════════════
-// SECTION 5: BEHAVIORS
+// SECTION 4: BEHAVIORS
 // ═══════════════════════════════════════════════════════════════
 
 function highlight(app, idx) {
@@ -156,31 +85,25 @@ class AppBehavior extends Behavior {
             else if (type === "down") { nav.mi = (nav.mi+1)%n; highlight(app, nav.mi); }
             else if (type === "select") {
                 const item = MENU[nav.mi];
-                if (item.type === "data") { nav.ci = item.ci; nav.si = 0; nav.screen = "sub"; app.remove(app.first); app.add(new SubCol(PRAYER_INDEX[item.ci], {})); }
+                if (item.type === "data") { nav.ci = item.ci; nav.si = 0; nav.screen = "sub"; app.remove(app.first); app.add(new SubCol(CATS[item.ci], {})); }
                 else if (item.type === "counter") { nav.count = 0; nav.screen = "counter"; app.remove(app.first); app.add(new CountCol({})); }
                 else if (item.type === "badi") { nav.screen = "badi"; app.remove(app.first); app.add(new BadiCol({})); }
             }
         } else if (nav.screen === "sub") {
-            const n = PRAYER_INDEX[nav.ci].items.length;
+            const n = CATS[nav.ci].n;
             if (type === "up") { nav.si = (nav.si-1+n)%n; highlight(app, nav.si); }
             else if (type === "down") { nav.si = (nav.si+1)%n; highlight(app, nav.si); }
             else if (type === "select") {
-                const prayer = PRAYER_INDEX[nav.ci].items[nav.si];
-                nav.prayerId = prayer.id;
-                nav.so = 0;
-                nav.screen = "reader";
+                nav.so = 0; nav.screen = "reader";
+                const p = getPrayer(nav.ci, nav.si);
                 app.remove(app.first);
-                app.add(new LoadCol({ title: prayer.title }, {}));
-                requestPrayer(prayer.id);
+                app.add(new ReadCol(p, {}));
             }
             else if (type === "back") { nav.screen = "main"; app.remove(app.first); app.add(new MainCol(MENU, {})); }
         } else if (nav.screen === "reader") {
             if (type === "up") { nav.so = Math.max(0, nav.so-25); app.first.delegate("onScroll", nav.so); }
             else if (type === "down") { nav.so += 25; app.first.delegate("onScroll", nav.so); }
-            else if (type === "back") {
-                nav.screen = "sub"; activePrayerText = "";
-                app.remove(app.first); app.add(new SubCol(PRAYER_INDEX[nav.ci], {}));
-            }
+            else if (type === "back") { nav.screen = "sub"; app.remove(app.first); app.add(new SubCol(CATS[nav.ci], {})); }
         } else if (nav.screen === "counter") {
             if (type === "up" || type === "select") {
                 if (nav.count < 95) { nav.count++; app.first.delegate("onCount", nav.count); }
@@ -198,12 +121,6 @@ class AppBehavior extends Behavior {
 class ReadBeh extends Behavior {
     onDisplaying(c) { this.sc = c.last; }
     onScroll(c, o) { if (this.sc) this.sc.scrollTo(0, o); }
-    onPrayerLoaded(c, title, author, text) {
-        // Replace loading screen with actual reader
-        const app = global.application;
-        app.remove(app.first);
-        app.add(new ReadCol({ title: title, text: text, by: author }, {}));
-    }
 }
 
 class CountBeh extends Behavior {
@@ -212,7 +129,7 @@ class CountBeh extends Behavior {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// SECTION 6: TEMPLATES
+// SECTION 5: TEMPLATES
 // ═══════════════════════════════════════════════════════════════
 
 const MainItem = Row.template($ => ({
@@ -240,22 +157,14 @@ const MainCol = Column.template($ => ({
 const SubCol = Column.template($ => ({
     top: 0, bottom: 0, left: 0, right: 0, skin: bgSkin,
     contents: [
-        Label(null, { top: 0, height: 30, left: 0, right: 0, skin: hdrSkin, style: hdrStyle, string: $.title }),
-        ...$.items.map((it, i) => new SubItem({ title: it.title, idx: i }))
+        Label(null, { top: 0, height: 30, left: 0, right: 0, skin: hdrSkin, style: hdrStyle, string: $.t }),
+        ...range($.n).map(i => {
+            const titles = $.T.split("\x01");
+            return new SubItem({ title: titles[i], idx: i });
+        })
     ]
 }));
 
-// Loading screen (shown while text streams from PKJS)
-const LoadCol = Column.template($ => ({
-    top: 0, bottom: 0, left: 0, right: 0, skin: bgSkin,
-    contents: [
-        Label(null, { top: 0, height: 26, left: 0, right: 0, skin: hdrSkin, style: redStyle, string: $.title }),
-        Label(null, { top: 30, height: 30, left: 0, right: 0, style: greyStyle, string: "Loading..." })
-    ],
-    Behavior: ReadBeh
-}));
-
-// Reader screen (shown once text arrives)
 const ReadCol = Column.template($ => ({
     top: 0, bottom: 0, left: 0, right: 0, skin: bgSkin,
     contents: [
@@ -296,8 +205,10 @@ const BadiCol = Column.template($ => {
     };
 });
 
+function range(n) { const a = []; for (let i = 0; i < n; i++) a.push(i); return a; }
+
 // ═══════════════════════════════════════════════════════════════
-// SECTION 7: BOOTSTRAP
+// SECTION 6: BOOTSTRAP
 // ═══════════════════════════════════════════════════════════════
 
 const App = Application.template($ => ({
