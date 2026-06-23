@@ -1,8 +1,14 @@
 ![image](https://images.mitch.science/i/9d611fea-0068-408c-92e9-eec66b0ad412.jpg)
 
-# 🪨 Bahá'í Prayer Book for Pebble
+# 🪨 Mitch's Bahá'í Prayer App (for Pebble Time 2 & Pebble Round 2)
 
-A Bahá'í prayer book app for Pebble smartwatches, built with the native C SDK. All 43 prayers from the standard prayer book, an Alláh-u-Abhá 95× counter, a Badí calendar, and more — all on your wrist.
+## Where Do I Get It?
+
+Grab the latest release from the Pebble app store, or click [here](https://apps.repebble.com/87069cdc983047dca17368d6).
+
+## What Is It?
+
+A Bahá'í prayer book app for the latest Pebble smartwatches, built with the native C SDK. All 249 prayers from the standard prayer book, an Alláh-u-Abhá 95× counter, a Badí calendar, and more — all on your wrist.
 
 > Dedicated to my dear friend Meg Moyer.
 > Free & open source.
@@ -10,14 +16,13 @@ A Bahá'í prayer book app for Pebble smartwatches, built with the native C SDK.
 
 ## Features
 
-- **43 prayers** across three categories:
+- **249 prayers** across three categories:
   - Obligatory Prayers (Short, Medium, Long)
-  - 35 General Prayers
-  - 5 Occasional Prayers
+  - General Prayers
+  - Occasional Prayers
 - **Scrollable reader** with word counts shown in the submenu for each prayer
 - **Alláh-u-Abhá counter** — tap to count, vibrates at 95, resettable
 - **Badí calendar** — shows today's Bahá'í date (day, month, and year B.E.)
-- **About screen** with dedication and credits
 - Built entirely in C — no phone connection required
 
 ## Target Platforms
