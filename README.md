@@ -1,3 +1,5 @@
+![image](https://images.mitch.science/i/9d611fea-0068-408c-92e9-eec66b0ad412.jpg)
+
 # 🪨 Bahá'í Prayer Book for Pebble
 
 A Bahá'í prayer book app for Pebble smartwatches, built with the native C SDK. All 43 prayers from the standard prayer book, an Alláh-u-Abhá 95× counter, a Badí calendar, and more — all on your wrist.
